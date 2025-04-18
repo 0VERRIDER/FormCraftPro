@@ -11,6 +11,7 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://neondb_owner:npg_DEz29mABFHXh@ep-yellow-waterfall-a44kwfr4-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
       - SESSION_SECRET=your_session_secret_should_be_changed_in_production
+      - JWT_SECRET=your-jwt-secret-for-development
     depends_on:
       - db
     restart: unless-stopped
@@ -18,6 +19,8 @@ services:
       - app-node-modules:/app/node_modules
     networks:
       - formbuilder-network
+    expose:
+      - "5000" # Expose the port, but don't publish it to the host
 
   db:
     image: postgres:16-alpine
@@ -33,9 +36,47 @@ services:
     networks:
       - formbuilder-network
 
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - "80:80" # Public HTTP port
+      - "443:443" # Public HTTPS port
+      - "81:81" # Admin web port
+    environment:
+      - DB_MYSQL_HOST=db
+      - DB_MYSQL_PORT=3306
+      - DB_MYSQL_USER=npm
+      - DB_MYSQL_PASSWORD=npm
+      - DB_MYSQL_NAME=npm
+    volumes:
+      - data:/data
+      - letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    networks:
+      - formbuilder-network
+
+  # Using a separate MySQL container for Nginx Proxy Manager
+  db-npm:
+    image: mariadb:latest
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=your_mysql_root_password
+      - MYSQL_USER=npm
+      - MYSQL_PASSWORD=npm
+      - MYSQL_DATABASE=npm
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - formbuilder-network
+
 volumes:
   postgres-data:
   app-node-modules:
+  data: # Data volume for Nginx Proxy Manager
+  letsencrypt: # Volume for Let's Encrypt certificates
+  db_data: # Volume for MySQL data
 
 networks:
   formbuilder-network:
