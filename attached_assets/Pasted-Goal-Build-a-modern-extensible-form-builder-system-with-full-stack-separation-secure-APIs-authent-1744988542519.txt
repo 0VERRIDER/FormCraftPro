@@ -1,0 +1,133 @@
+Goal
+Build a modern, extensible form builder system with full-stack separation, secure APIs, authenticated webhooks, and a clean mobile-friendly UI.
+
+📦 Features Breakdown
+🔧 Form Builder Functionality
+Drag-and-drop form builder
+
+Input types:
+
+Text, Number, Email, Date/Time, Checkbox, Dropdown, Radio Buttons
+
+URL input, File upload (with restrictions), Hidden fields (static + from URL query)
+
+Field-to-key binding for structured JSON payload
+
+Webhook URL configuration (per form)
+
+Custom validation per field:
+
+Required, Regex, Min/Max, Custom error messages
+
+🌍 Public Form Access
+Public form URLs:
+https://domain.com/forms/{uuid}
+(UUID v4 as unique identifier for each form)
+
+Public view supports:
+
+Mobile responsiveness
+
+URL query parameter injection into hidden fields
+
+🔐 Admin Panel
+URL: https://domain.com/admin
+
+Login-protected (JWT, Firebase Auth, etc.)
+
+Access to:
+
+Form builder interface
+
+Submission log viewer
+
+Webhook config (with optional auth headers)
+
+Export tool (CSV/JSON via Web Worker)
+
+🔄 Webhook Dispatch
+Submit data as JSON to user-defined Webhook
+
+Include optional Auth Headers (Bearer/API Key/Basic Auth)
+
+Retry mechanism with exponential backoff (optional enhancement)
+
+📄 Submission Viewer
+List + filter submissions
+
+View full payloads (including file data or links)
+
+Export using Web Worker to avoid UI blocking
+
+Format: CSV and JSON
+
+🔐 API Security
+All backend routes (admin & submission) require:
+
+Client ID + Client Secret (via headers or HMAC)
+
+Unauthorized requests → 401 Unauthorized
+
+Public submission endpoint is open but rate-limited and secured
+
+📱 Mobile Friendly UX
+Fully responsive layout:
+
+Optimized for phones and tablets
+
+Touch-friendly drag/drop builder
+
+Mobile-optimized form fields and buttons
+
+Use a responsive framework (Tailwind CSS / Bootstrap / custom media queries)
+
+🧱 Architecture
+Structure
+bash
+Copy
+Edit
+project-root/
+├── client/       # React/Vue frontend
+├── server/       # Express/Django backend
+├── .env
+├── docker-compose.yml
+Environment Variables
+env
+Copy
+Edit
+API_BASE_URL=http://localhost:5000
+CLIENT_SECRET=your-client-secret
+JWT_SECRET=your-jwt-secret
+PUBLIC_FORM_URL=https://yourdomain.com/forms
+Docker Compose
+yaml
+Copy
+Edit
+version: '3.8'
+services:
+  client:
+    build: ./client
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - server
+
+  server:
+    build: ./server
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
+✅ Optional Enhancements
+reCAPTCHA / Bot protection on public form
+
+Slack/email notification on submission
+
+Dark mode theme toggle
+
+Form analytics (views, conversions)
+
+Branding customization per form (logo, color, etc.)
+

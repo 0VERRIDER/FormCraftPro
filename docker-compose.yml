@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://neondb_owner:npg_DEz29mABFHXh@ep-yellow-waterfall-a44kwfr4-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
+      - SESSION_SECRET=your_session_secret_should_be_changed_in_production
+    depends_on:
+      - db
+    restart: unless-stopped
+    volumes:
+      - app-node-modules:/app/node_modules
+    networks:
+      - formbuilder-network
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=formbuilder
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - formbuilder-network
+
+volumes:
+  postgres-data:
+  app-node-modules:
+
+networks:
+  formbuilder-network:
+    driver: bridge
