@@ -15,8 +15,16 @@ export async function dispatchWebhook(
     }
 
     // Parse webhook settings
-    const webhookConfig: WebhookConfig = form.webhookHeaders ? 
-      JSON.parse(form.webhookHeaders as any) : { authType: 'none' };
+    let webhookConfig: WebhookConfig;
+    if (form.webhookHeaders) {
+      if (typeof form.webhookHeaders === 'string') {
+        webhookConfig = JSON.parse(form.webhookHeaders);
+      } else {
+        webhookConfig = form.webhookHeaders as WebhookConfig;
+      }
+    } else {
+      webhookConfig = { authType: 'none' };
+    }
     
     // Set up headers
     const headers: Record<string, string> = {};
