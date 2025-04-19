@@ -222,7 +222,7 @@ export function PublicForm({ form }: PublicFormProps) {
           <p className="text-gray-600">
             {settings.successMessage || "Your form has been submitted successfully."}
           </p>
-          <Button 
+          {/* <Button 
             className="mt-6"
             onClick={() => {
               setIsSubmitted(false);
@@ -231,7 +231,7 @@ export function PublicForm({ form }: PublicFormProps) {
             }}
           >
             Submit Another Response
-          </Button>
+          </Button> */}
         </CardContent>
       </Card>
     );
