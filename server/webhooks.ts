@@ -63,9 +63,15 @@ export async function dispatchWebhook(
     while (retryCount <= maxRetries && !success) {
       try {
         const attemptNumber = retryCount + 1;
+        const payload = {
+          ...submission.data,
+          formId: form.id,
+          submissionId: submission.id,
+          attemptNumber
+        };
         
         // Send webhook request
-        const response = await axios.post(form.webhookUrl, submission.data, { headers });
+        const response = await axios.post(form.webhookUrl, payload, { headers });
         
         // Log the successful attempt
         await storage.createWebhookLog({
