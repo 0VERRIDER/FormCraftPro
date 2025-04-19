@@ -27,6 +27,17 @@ export function PublicForm({ form }: PublicFormProps) {
   const settings = form.settings as FormSettings;
   const fields = form.fields as Field[];
 
+  // Unique key for localStorage per form
+  const localStorageKey = `form_submitted_${form.uuid}`;
+
+  // On mount, check if form was submitted (from localStorage)
+  useEffect(() => {
+    const submitted = localStorage.getItem(localStorageKey);
+    if (submitted === "true") {
+      setIsSubmitted(true);
+    }
+  }, [localStorageKey]);
+
   // Generate validation schema dynamically based on form fields
   const generateValidationSchema = () => {
     const schema: Record<string, any> = {};
@@ -174,6 +185,7 @@ export function PublicForm({ form }: PublicFormProps) {
       
       // Show success message
       setIsSubmitted(true);
+      localStorage.setItem(localStorageKey, "true");
       
       // If redirect URL is set, redirect after a short delay
       if (settings.redirectUrl) {
@@ -214,6 +226,7 @@ export function PublicForm({ form }: PublicFormProps) {
             className="mt-6"
             onClick={() => {
               setIsSubmitted(false);
+              localStorage.removeItem(localStorageKey);
               reset();
             }}
           >
