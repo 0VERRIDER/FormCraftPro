@@ -225,20 +225,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Public form access using custom path 
   // Must be defined BEFORE the :uuid parameter route to avoid conflicts
-  app.get("/api/public/forms/path/:customPath", async (req: Request, res: Response) => {
+  app.get("/api/public/forms/:uuid", async (req: Request, res: Response) => {
     try {
-      const customPath = req.params.customPath;
+      const uuid = req.params.uuid;
       // Get all forms from all users to check custom path uniqueness
-      const forms = await storage.getAllForms();
+      const form = await storage.getFormByUuid(uuid);
       
       // Find form with matching customPath
-      const form = forms.find((f: Form) => {
-        const settings = f.settings as FormSettings;
-        return settings && settings.customPath === customPath;
-      });
+      // const form = forms.find((f: Form) => {
+      //   const settings = f.settings as FormSettings;
+      //   return settings && settings.id === id;
+      // });
       
       if (!form) {
-        return res.status(404).json({ message: "Form not found" });
+        return res.status(404).json({ message: "Form not found", uuid });
       }
       
       // Return public form data (excluding webhook details)
