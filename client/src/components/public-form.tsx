@@ -32,6 +32,12 @@ export function PublicForm({ form }: PublicFormProps) {
 
   // On mount, check if form was submitted (from localStorage)
   useEffect(() => {
+    // Remove all other form_submitted_ keys except the current one
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("form_submitted_") && key !== localStorageKey) {
+        localStorage.removeItem(key);
+      }
+    });
     const submitted = localStorage.getItem(localStorageKey);
     if (submitted === "true") {
       setIsSubmitted(true);
@@ -185,6 +191,12 @@ export function PublicForm({ form }: PublicFormProps) {
       
       // Show success message
       setIsSubmitted(true);
+      // Only keep the current form's submission in localStorage
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("form_submitted_") && key !== localStorageKey) {
+          localStorage.removeItem(key);
+        }
+      });
       localStorage.setItem(localStorageKey, "true");
       
       // If redirect URL is set, redirect after a short delay
@@ -222,7 +234,7 @@ export function PublicForm({ form }: PublicFormProps) {
           <p className="text-gray-600">
             {settings.successMessage || "Your form has been submitted successfully."}
           </p>
-          {/* <Button 
+          <Button 
             className="mt-6"
             onClick={() => {
               setIsSubmitted(false);
@@ -231,7 +243,7 @@ export function PublicForm({ form }: PublicFormProps) {
             }}
           >
             Submit Another Response
-          </Button> */}
+          </Button>
         </CardContent>
       </Card>
     );
